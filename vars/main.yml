@@ -1,0 +1,4 @@
+---
+# vars file for strapi
+#
+server_name: localhost

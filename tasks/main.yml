@@ -1,0 +1,77 @@
+---
+# tasks file for strapi
+#
+- name: Installing docker
+  package:
+         name: docker-ce
+         state: present
+
+- name: Installing docker-compose
+  become: yes
+  get_url:
+          url:  https://github.com/docker/compose/releases/download/1.28.5/docker-compose-Linux-x86_64 
+          dest: /usr/local/bin/docker-compose
+          mode: 'u+x,g+x'
+
+- name: Making docker-compose executable
+  command: 'sudo chmod +x /usr/local/bin/docker-compose'
+
+- name: Installing Nginx
+  package:
+          name: nginx
+          state: present
+- name: Creating folder strapi1
+  file:
+    path: /root/strapi1
+    state: directory
+
+- name: Creating folder strapi2
+  file:
+    path: /root/strapi2
+    state: directory
+
+- name: Creating folder strapi3
+  file:
+    path: /root/strapi3
+    state: directory
+    
+
+- name: Copying template file docker-compose.yaml in strapi1
+  template:
+          src: docker-compose.yaml
+          dest: /root/strapi1/docker-compose.yaml
+
+- name: Copying template file docker-compose.yaml in strapi2
+  template:
+          src: docker-compose2.yaml
+          dest: /root/strapi2/docker-compose.yaml
+
+- name: Copying template file docker-compose.yaml in strapi3
+  template:
+          src: docker-compose3.yaml
+          dest: /root/strapi3/docker-compose.yaml
+
+- name: Pulling image
+  command: docker-compose pull
+  args:
+          chdir: /root/strapi1
+
+- name: Creating strapi container strapi1
+  command: docker-compose up -d 
+  args:
+          chdir: /root/strapi1
+
+- name: Creating strapi container strapi2
+  command: docker-compose up -d
+  args:
+          chdir: /root/strapi2          
+
+- name: Creating strapi container strapi3
+  command: docker-compose up -d
+  args:
+          chdir: /root/strapi3
+
+- name: Copying nginx template file
+  template:
+          src: strapi.conf.j2
+          dest: /etc/nginx/conf.d/strapi.conf  
